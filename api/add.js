@@ -19,13 +19,19 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { file, phone } = req.body;
+    // Get file from query string OR body (backward compatible)
+    const fileFromQuery = req.query.file;
+    const fileFromBody = req.body.file;
+    const file = fileFromQuery || fileFromBody;
+
+    // Get phone from body
+    const phone = req.body.phone;
 
     // Validate file parameter
     if (!file) {
       return res.status(400).json({ 
         success: false, 
-        message: 'File parameter is required' 
+        message: 'File parameter is required (use ?file=filename in URL)' 
       });
     }
 

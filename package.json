@@ -1,0 +1,6 @@
+{
+  "name": "phone-api-github",
+  "version": "1.0.0",
+  "description": "Phone number management API with GitHub storage",
+  "type": "module"
+}

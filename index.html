@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone API - Admin Dashboard</title>
+    <style>
+        :root {
+            --primary: #00e7d0;
+            --secondary: #00ffaa;
+            --dark: #0a0f1c;
+            --darker: #060a14;
+            --text: #ffffff;
+            --text-muted: #b3c1ff;
+            --warning: #ffaa00;
+            --danger: #ff4757;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--darker);
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 100%;
+            padding: 0 16px;
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 15, 28, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 231, 208, 0.2);
+            padding: 12px 0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Buttons */
+        button {
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 5px 15px rgba(0, 231, 208, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(0, 231, 208, 0.1);
+        }
+
+        .btn-secondary {
+            background: rgba(0, 255, 170, 0.2);
+            border: 1px solid var(--secondary);
+            color: var(--secondary);
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        /* Login Page */
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 231, 208, 0.2);
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-title {
+            font-size: 36px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 231, 208, 0.3);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 231, 208, 0.1);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark);
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 231, 208, 0.3);
+        }
+
+        /* Dashboard */
+        .dashboard {
+            display: none;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 16px;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .page-title {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 1px solid rgba(0, 231, 208, 0.2);
+            margin-bottom: 40px;
+        }
+
+        .page-title h1 {
+            font-size: 36px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .page-title p {
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        /* Section */
+        .section {
+            margin: 40px 0;
+        }
+
+        .section h2 {
+            font-size: 26px;
+            color: var(--primary);
+            border-bottom: 2px solid rgba(0, 231, 208, 0.2);
+            padding-bottom: 12px;
+            margin-bottom: 24px;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 231, 208, 0.2);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 231, 208, 0.2);
+        }
+
+        /* Client Card */
+        .client-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 231, 208, 0.2);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .client-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 231, 208, 0.2);
+        }
+
+        .client-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .client-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .phone-count {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .endpoints {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .endpoint-item {
+            margin-bottom: 16px;
+        }
+
+        .endpoint-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .endpoint-label {
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .endpoint-value {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-all;
+            border: 1px solid rgba(0, 231, 208, 0.2);
+            color: var(--text);
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* Input Group */
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .input-group input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--dark);
+            border: 1px solid rgba(0, 231, 208, 0.2);
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        .phone-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .phone-item {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 8px;
+            border-radius: 6px;
+            font-family: monospace;
+            border: 1px solid rgba(0, 231, 208, 0.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark);
+            padding: 15px 25px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 231, 208, 0.5);
+            display: none;
+            z-index: 2000;
+            font-weight: 600;
+            animation: slideIn 0.3s;
+        }
+
+        .toast.error {
+            background: var(--danger);
+            color: var(--text);
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .client-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .actions {
+                width: 100%;
+            }
+            
+            .actions button {
+                flex: 1;
+            }
+        }
+
+        .info-box {
+            background: rgba(0, 231, 208, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            margin: 24px 0;
+            border-radius: 8px;
+        }
+
+        .info-box strong {
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="login-card">
+            <h1 class="login-title">🔐 Admin Login</h1>
+            <form onsubmit="login(event)">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" id="username" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="password" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="submit-btn">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="logo">📱 Phone API</div>
+                <button onclick="logout()" class="btn-outline btn-small">Logout</button>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Page Title -->
+            <div class="page-title">
+                <h1>Admin Dashboard</h1>
+                <p>Manage clients and generate base64 encoded endpoints</p>
+            </div>
+
+            <!-- Add New Client Section -->
+            <div class="section">
+                <h2>➕ Add New Client</h2>
+                <div class="card">
+                    <div class="info-box">
+                        <strong>How it works:</strong> Enter a client name and get fully encoded endpoints that hide the actual URLs.
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="newClientName" placeholder="Enter client name (e.g., john, abc-company)">
+                        <button onclick="addClient()" class="btn-primary">Generate Endpoints</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clients List Section -->
+            <div class="section">
+                <h2>👥 Active Clients</h2>
+                <button onclick="loadClients()" class="btn-secondary" style="margin-bottom: 20px">🔄 Refresh List</button>
+                <div id="clientsList">
+                    <div class="loading">Loading clients...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Phones Modal -->
+    <div id="phonesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalClientName">Client Phones</h3>
+            </div>
+            <div id="phonesList" class="phone-list">
+                <div class="loading">Loading phones...</div>
+            </div>
+            <button onclick="closeModal()" class="btn-outline">Close</button>
+        </div>
+    </div>
+
+    <!-- Add Phone Modal -->
+    <div id="addPhoneModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Phone Number</h3>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input type="text" id="newPhoneNumber" placeholder="Enter 10-digit phone number" maxlength="10">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="addPhoneToClient()" class="btn-primary" style="flex: 1">Add Phone</button>
+                <button onclick="closeAddPhoneModal()" class="btn-outline" style="flex: 1">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const API_BASE = 'https://phone-api-theta.vercel.app';
+        const CREDENTIALS = { username: 'unknitin', password: 'nitin561' };
+        let currentClient = '';
+
+        // Check if already logged in
+        window.onload = () => {
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                showDashboard();
+                loadClients();
+            }
+        };
+
+        // Login function
+        function login(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === CREDENTIALS.username && password === CREDENTIALS.password) {
+                sessionStorage.setItem('isLoggedIn', 'true');
+                showDashboard();
+                loadClients();
+                showToast('✅ Login successful!');
+            } else {
+                showToast('❌ Invalid credentials', true);
+            }
+        }
+
+        // Logout function
+        function logout() {
+            sessionStorage.removeItem('isLoggedIn');
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('dashboard').classList.remove('active');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        // Show dashboard
+        function showDashboard() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('dashboard').classList.add('active');
+        }
+
+        // Show toast notification
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show' + (isError ? ' error' : '');
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 3000);
+        }
+
+        // Encode full URL to base64
+        function encodeURL(url) {
+            return btoa(url);
+        }
+
+        // Generate endpoints for a client
+        function generateEndpoints(clientName) {
+            const getURL = `${API_BASE}/api/get?file=${clientName}`;
+            const addURL = `${API_BASE}/api/add`;
+            
+            return {
+                get: encodeURL(getURL),
+                add: encodeURL(addURL),
+                clientFile: clientName
+            };
+        }
+
+        // Add new client
+        async function addClient() {
+            const clientName = document.getElementById('newClientName').value.trim();
+            
+            if (!clientName) {
+                showToast('Please enter a client name', true);
+                return;
+            }
+
+            if (!/^[a-zA-Z0-9-_]+$/.test(clientName)) {
+                showToast('Client name can only contain letters, numbers, hyphens, and underscores', true);
+                return;
+            }
+
+            const endpoints = generateEndpoints(clientName);
+            
+            showToast(`✅ Endpoints generated for: ${clientName}`);
+            document.getElementById('newClientName').value = '';
+            
+            setTimeout(() => loadClients(), 500);
+        }
+
+        // Load all clients
+        async function loadClients() {
+            const clientsList = document.getElementById('clientsList');
+            clientsList.innerHTML = '<div class="loading">Loading clients from GitHub...</div>';
+
+            try {
+                // This would need to be updated with actual GitHub repo info
+                const response = await fetch(`${API_BASE}/api/get?file=_clients_list`);
+                
+                if (response.status === 404 || !response.ok) {
+                    // Try to get list from GitHub API
+                    await loadClientsFromGitHub();
+                    return;
+                }
+
+                const data = await response.json();
+                if (!data.phones || data.phones.length === 0) {
+                    await loadClientsFromGitHub();
+                    return;
+                }
+
+                clientsList.innerHTML = '';
+                for (const clientName of data.phones) {
+                    await renderClientCard(clientName);
+                }
+
+            } catch (error) {
+                console.error('Error loading clients:', error);
+                await loadClientsFromGitHub();
+            }
+        }
+
+        // Load clients from GitHub (fallback)
+        async function loadClientsFromGitHub() {
+            const clientsList = document.getElementById('clientsList');
+            clientsList.innerHTML = '<div class="empty-state">No clients yet. Add your first client above!<br><br>Note: Clients will appear here after you add phone numbers to them.</div>';
+        }
+
+        // Render client card
+        async function renderClientCard(clientName) {
+            const clientsList = document.getElementById('clientsList');
+            const endpoints = generateEndpoints(clientName);
+            
+            let phoneCount = 0;
+            try {
+                const response = await fetch(`${API_BASE}/api/get?file=${clientName}`);
+                const data = await response.json();
+                phoneCount = data.phones ? data.phones.length : 0;
+            } catch (error) {
+                console.error('Error getting phone count:', error);
+            }
+
+            const card = document.createElement('div');
+            card.className = 'client-card';
+            card.innerHTML = `
+                <div class="client-header">
+                    <div class="client-name">📁 ${clientName}</div>
+                    <div class="phone-count">${phoneCount} phones</div>
+                </div>
+                <div class="endpoints">
+                    <div class="endpoint-item">
+                        <div class="endpoint-label">🔗 GET ENDPOINT (BASE64 ENCODED)</div>
+                        <div class="endpoint-value">${endpoints.get}</div>
+                        <button class="btn-small btn-secondary" onclick="copyToClipboard('${endpoints.get}', 'GET')" style="margin-top: 8px">📋 Copy GET</button>
+                    </div>
+                    <div class="endpoint-item">
+                        <div class="endpoint-label">🔗 ADD ENDPOINT (BASE64 ENCODED)</div>
+                        <div class="endpoint-value">${endpoints.add}</div>
+                        <button class="btn-small btn-secondary" onclick="copyToClipboard('${endpoints.add}', 'ADD')" style="margin-top: 8px">📋 Copy ADD</button>
+                    </div>
+                    <div class="endpoint-item">
+                        <div class="endpoint-label">📝 CLIENT FILE NAME</div>
+                        <div class="endpoint-value">${clientName}</div>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button onclick="viewPhones('${clientName}')" class="btn-outline">👁️ View Phones</button>
+                    <button onclick="openAddPhoneModal('${clientName}')" class="btn-primary">➕ Add Phone</button>
+                </div>
+            `;
+
+            clientsList.appendChild(card);
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(text, type) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(`✅ ${type} endpoint copied!`);
+            }).catch(() => {
+                showToast('Failed to copy', true);
+            });
+        }
+
+        // View phones
+        async function viewPhones(clientName) {
+            currentClient = clientName;
+            document.getElementById('modalClientName').textContent = `📱 ${clientName}`;
+            document.getElementById('phonesModal').classList.add('active');
+            document.getElementById('phonesList').innerHTML = '<div class="loading">Loading phones...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/get?file=${clientName}`);
+                const data = await response.json();
+                
+                const phonesList = document.getElementById('phonesList');
+                
+                if (!data.phones || data.phones.length === 0) {
+                    phonesList.innerHTML = '<div class="empty-state">No phones yet</div>';
+                    return;
+                }
+
+                phonesList.innerHTML = data.phones.map(phone => 
+                    `<div class="phone-item">${phone}</div>`
+                ).join('');
+
+            } catch (error) {
+                console.error('Error loading phones:', error);
+                document.getElementById('phonesList').innerHTML = '<div class="empty-state">Error loading phones</div>';
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('phonesModal').classList.remove('active');
+        }
+
+        // Open add phone modal
+        function openAddPhoneModal(clientName) {
+            currentClient = clientName;
+            document.getElementById('addPhoneModal').classList.add('active');
+            document.getElementById('newPhoneNumber').value = '';
+        }
+
+        // Close add phone modal
+        function closeAddPhoneModal() {
+            document.getElementById('addPhoneModal').classList.remove('active');
+        }
+
+        // Add phone to client
+        async function addPhoneToClient() {
+            const phone = document.getElementById('newPhoneNumber').value.trim();
+
+            if (!phone) {
+                showToast('Please enter a phone number', true);
+                return;
+            }
+
+            if (phone.length !== 10 || !/^\d+$/.test(phone)) {
+                showToast('Phone must be exactly 10 digits', true);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/add`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        file: currentClient,
+                        phone: phone
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast(`✅ Phone added to ${currentClient}`);
+                    closeAddPhoneModal();
+                    loadClients();
+                } else {
+                    showToast(data.message, true);
+                }
+
+            } catch (error) {
+                console.error('Error adding phone:', error);
+                showToast('Error adding phone', true);
+            }
+        }
+
+        // Close modals on outside click
+        window.onclick = (event) => {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        };
+    </script>
+</body>
+</html>

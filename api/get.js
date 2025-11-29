@@ -2,7 +2,7 @@
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   // Handle preflight
@@ -10,8 +10,8 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  // Only allow GET
-  if (req.method !== 'GET') {
+  // Allow both GET and POST (for backward compatibility)
+  if (req.method !== 'GET' && req.method !== 'POST') {
     return res.status(405).json({ 
       success: false, 
       message: 'Method not allowed' 
@@ -19,13 +19,16 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { file } = req.query;
+    // Get file from query string OR body (support both)
+    const fileFromQuery = req.query.file;
+    const fileFromBody = req.body?.file;
+    const file = fileFromQuery || fileFromBody;
 
     // Validate file parameter
     if (!file) {
       return res.status(400).json({ 
         success: false, 
-        message: 'File parameter is required' 
+        message: 'File parameter is required (use ?file=filename in URL)' 
       });
     }
 
